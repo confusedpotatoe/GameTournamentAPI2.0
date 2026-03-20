@@ -1,4 +1,4 @@
-# GameTournamentAPI2.0
+# GameTournamentAPI
 
 🧠 Big Picture (what you’re building)
 
