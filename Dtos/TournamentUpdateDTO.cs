@@ -1,8 +1,6 @@
-﻿
-
-namespace GameTournamentAPI.Dtos
+﻿namespace GameTournamentAPI.Dtos
 {
-	public class TournamentCreateDTO
+	public class TournamentUpdateDTO
 	{
 		public string Titel { get; set; } = string.Empty;
 		public string Description { get; set; } = string.Empty;
