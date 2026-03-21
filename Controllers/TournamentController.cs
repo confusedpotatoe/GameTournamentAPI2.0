@@ -1,4 +1,5 @@
-﻿using GameTournamentAPI.Models;
+﻿using GameTournamentAPI.Dtos;
+using GameTournamentAPI.Models;
 using GameTournamentAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -33,6 +34,19 @@ namespace GameTournamentAPI.Controllers
 			return Ok(tournament);
 		}
 
+		[HttpPost]
+		public async Task<ActionResult> Create(TournamentCreateDTO dto)
+		{
+			var tournament = new Tournament
+			{
+				Titel = dto.Titel,
+				Description = dto.Description,
+				MaxPlayers = dto.maxPlayers,
+				DateTime = dto.Date
+			};
+			var created = await _service.CreateAsync(tournament);
+			return Ok(new TournamentResponseDTO { Id = created.Id });
+		}
 	}
 
 }
