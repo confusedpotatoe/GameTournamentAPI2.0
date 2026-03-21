@@ -43,7 +43,7 @@ namespace GameTournamentAPI.Services
 			{
 				return false;
 			}
-			existingTournament.Titel = tournament.Titel;
+			existingTournament.Title = tournament.Title;
 			existingTournament.Description = tournament.Description;
 			existingTournament.MaxPlayers = tournament.MaxPlayers;
 			existingTournament.DateTime = tournament.DateTime;

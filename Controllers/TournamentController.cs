@@ -39,9 +39,9 @@ namespace GameTournamentAPI.Controllers
 		{
 			var tournament = new Tournament
 			{
-				Titel = dto.Titel,
+				Title = dto.Title,
 				Description = dto.Description,
-				MaxPlayers = dto.maxPlayers,
+				MaxPlayers = dto.MaxPlayers,
 				DateTime = dto.Date
 			};
 			var created = await _service.CreateAsync(tournament);
