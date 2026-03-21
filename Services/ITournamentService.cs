@@ -1,5 +1,6 @@
 ﻿using GameTournamentAPI.Models;
 
+
 namespace GameTournamentAPI.Services
 {
 	public interface ITournamentService
