@@ -26,7 +26,10 @@ namespace GameTournamentAPI
 				options.UseSqlServer(
 					builder.Configuration.GetConnectionString("DefaultConnection")));
 
-			builder.Services.AddAutoMapper(typeof(TournamentProfile));
+			builder.Services.AddAutoMapper(cfg =>
+			{
+				cfg.AddMaps(typeof(TournamentProfile).Assembly);
+			});
 
 			builder.Services.AddScoped<ITournamentService, TournamentService>();
 
