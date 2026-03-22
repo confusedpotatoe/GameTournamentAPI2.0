@@ -1,81 +1,64 @@
-﻿using GameTournamentAPI.DTOs;
+﻿using AutoMapper;
+using GameTournamentAPI.DTOs;
 using GameTournamentAPI.Models;
-using GameTournamentAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace GameTournamentAPI.Controllers
+[ApiController]
+[Route("api/[controller]")]
+public class TournamentController : ControllerBase
 {
-	[ApiController]
-	[Route("api/[controller]")]
-	public class TournamentController : ControllerBase
+	private readonly ITournamentService _service;
+	private readonly IMapper _mapper;
+
+	public TournamentController(ITournamentService service, IMapper mapper)
 	{
-		private readonly ITournamentService _service;
-
-		public TournamentController(ITournamentService service)
-		{
-			_service = service;
-		}
-
-		[HttpGet]
-		public async Task<ActionResult<List<TournamentResponseDTO>>> GetAll([FromQuery] string? search)
-		{
-			var tournaments = await _service.GetAllSyncs(search);
-
-			var result = tournaments.Select(t => new TournamentResponseDTO
-			{
-				Id = t.Id,
-				Title = t.Title,
-				Description = t.Description,
-				MaxPlayers = t.MaxPlayers,
-				Date = t.DateTime
-			});
-
-			return Ok(result);
-		}
-
-		[HttpGet("{id}")]
-		public async Task<ActionResult<TournamentResponseDTO>> GetById(int id)
-		{
-			var tournament = await _service.GetByIdAsync(id);
-
-			if (tournament == null)
-			{
-				return NotFound();
-			}
-
-			var dto = new TournamentResponseDTO
-			{
-				Id = tournament.Id,
-				Title = tournament.Title,
-				Description = tournament.Description,
-				MaxPlayers = tournament.MaxPlayers,
-				Date = tournament.DateTime
-			};
-
-			return Ok(dto);
-		}
-
-		[HttpPost]
-		public async Task<ActionResult> Create(TournamentCreateDTO dto)
-		{
-			var tournament = new Tournament
-			{
-				Title = dto.Title,
-				Description = dto.Description,
-				MaxPlayers = dto.MaxPlayers,
-				DateTime = dto.Date
-			};
-			var created = await _service.CreateAsync(tournament);
-			return CreatedAtAction(nameof(GetById), new { id = created.Id }, new TournamentResponseDTO
-			{
-				Id = created.Id,
-				Title = created.Title,
-				Description = created.Description,
-				MaxPlayers = created.MaxPlayers,
-				Date = created.DateTime
-			});
-		}
+		_service = service;
+		_mapper = mapper;
 	}
 
-}
+	[HttpGet]
+	public async Task<ActionResult<List<TournamentResponseDTO>>> GetAll(string? search)
+	{
+		var tournaments = await _service.GetAllSyncs(search);
+		return Ok(_mapper.Map<List<TournamentResponseDTO>>(tournaments));
+	}
 
+	[HttpGet("{id}")]
+	public async Task<ActionResult<TournamentResponseDTO>> GetById(int id)
+	{
+		var tournament = await _service.GetByIdAsync(id);
+		if (tournament == null) return NotFound();
+
+		return Ok(_mapper.Map<TournamentResponseDTO>(tournament));
+	}
+
+	[HttpPost]
+	public async Task<ActionResult> Create([FromBody] TournamentCreateDTO dto)
+	{
+		var model = _mapper.Map<Tournament>(dto);
+
+		var created = await _service.CreateAsync(model);
+
+		return CreatedAtAction(nameof(GetById),
+			new { id = created.Id },
+			_mapper.Map<TournamentResponseDTO>(created));
+	}
+
+	[HttpPut("{id}")]
+	public async Task<ActionResult> Update(int id, [FromBody] TournamentUpdateDTO dto)
+	{
+		var success = await _service.UpdateAsync(id, dto);
+		if (!success) return NotFound();
+
+		return NoContent();
+	}
+
+	[HttpDelete("{id}")]
+	public async Task<ActionResult> Delete(int id)
+	{
+		var success = await _service.DeleteAsync(id);
+		if (!success) return NotFound();
+
+		return NoContent();
+	}
+}

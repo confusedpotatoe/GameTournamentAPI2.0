@@ -4,16 +4,14 @@ namespace GameTournamentAPI.DTOs
 {
 	public class TournamentUpdateDTO
 	{
-		[Required]
 		[MinLength(3)]
-		public string Title { get; set; } = string.Empty;
+		public string? Title { get; set; }
 
-		public string Description { get; set; } = string.Empty;
+		public string? Description { get; set; }
 
 		[Range(2, 1000)]
-		public int MaxPlayers { get; set; }
+		public int? MaxPlayers { get; set; }
 
-		[Required]
-		public DateTime Date { get; set; }
+		public DateTime? Date { get; set; }
 	}
 }

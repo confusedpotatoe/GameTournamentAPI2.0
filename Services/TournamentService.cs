@@ -1,27 +1,32 @@
-﻿using GameTournamentAPI.Data;
+﻿using AutoMapper;
+using GameTournamentAPI.Data;
+using GameTournamentAPI.DTOs;
 using GameTournamentAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace GameTournamentAPI.Services
-
 {
 	public class TournamentService : ITournamentService
 	{
 		private readonly AppDbContext _context;
+		private readonly IMapper _mapper;
 
-		public TournamentService(AppDbContext context)
+		public TournamentService(AppDbContext context, IMapper mapper)
 		{
 			_context = context;
+			_mapper = mapper;
 		}
 
-		public async Task<List<Tournament>> GetAllSyncs(string? search)
+		public async Task<List<TournamentResponseDTO>> GetAllSyncs(string? search)
 		{
 			var query = _context.Tournaments.AsQueryable();
+
 			if (!string.IsNullOrEmpty(search))
-			{
 				query = query.Where(t => t.Title.Contains(search));
-			}
-			return await query.ToListAsync();
+
+			var tournaments = await query.ToListAsync();
+
+			return _mapper.Map<List<TournamentResponseDTO>>(tournaments);
 		}
 
 		public async Task<Tournament?> GetByIdAsync(int id)
@@ -36,29 +41,23 @@ namespace GameTournamentAPI.Services
 			return tournament;
 		}
 
-		public async Task<bool> UpdateAsync(int id, Tournament tournament)
+		public async Task<bool> UpdateAsync(int id, TournamentUpdateDTO dto)
 		{
-			var existingTournament = await _context.Tournaments.FindAsync(id);
-			if (existingTournament == null)
-			{
-				return false;
-			}
-			existingTournament.Title = tournament.Title;
-			existingTournament.Description = tournament.Description;
-			existingTournament.MaxPlayers = tournament.MaxPlayers;
-			existingTournament.DateTime = tournament.DateTime;
+			var existing = await _context.Tournaments.FindAsync(id);
+			if (existing == null) return false;
+
+			_mapper.Map(dto, existing);
+
 			await _context.SaveChangesAsync();
 			return true;
 		}
 
 		public async Task<bool> DeleteAsync(int id)
 		{
-			var existingTournament = await _context.Tournaments.FindAsync(id);
-			if (existingTournament == null)
-			{
-				return false;
-			}
-			_context.Tournaments.Remove(existingTournament);
+			var existing = await _context.Tournaments.FindAsync(id);
+			if (existing == null) return false;
+
+			_context.Tournaments.Remove(existing);
 			await _context.SaveChangesAsync();
 			return true;
 		}

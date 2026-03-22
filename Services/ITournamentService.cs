@@ -1,14 +1,11 @@
-﻿using GameTournamentAPI.Models;
+﻿using GameTournamentAPI.DTOs;
+using GameTournamentAPI.Models;
 
-
-namespace GameTournamentAPI.Services
+public interface ITournamentService
 {
-	public interface ITournamentService
-	{
-		Task<List<Tournament>> GetAllSyncs(string? search);
-		Task<Tournament?> GetByIdAsync(int id);
-		Task<Tournament> CreateAsync(Tournament tournament);
-		Task<bool> UpdateAsync(int id, Tournament tournament);
-		Task<bool> DeleteAsync(int id);
-	}
+	Task<List<TournamentResponseDTO>> GetAllSyncs(string? search);
+	Task<Tournament?> GetByIdAsync(int id);
+	Task<Tournament> CreateAsync(Tournament tournament);
+	Task<bool> UpdateAsync(int id, TournamentUpdateDTO dto);
+	Task<bool> DeleteAsync(int id);
 }

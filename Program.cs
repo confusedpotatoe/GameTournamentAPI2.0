@@ -1,4 +1,6 @@
 using GameTournamentAPI.Data;
+using GameTournamentAPI.Mapping;
+using GameTournamentAPI.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace GameTournamentAPI
@@ -9,27 +11,39 @@ namespace GameTournamentAPI
 		{
 			var builder = WebApplication.CreateBuilder(args);
 
-			builder.Services.AddDbContext<AppDbContext>(options =>
-				options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+			// Swagger
+			builder.Services.AddEndpointsApiExplorer();
+			builder.Services.AddSwaggerGen(c =>
+			{
+				c.SwaggerDoc("v1", new()
+				{
+					Title = "GameTournamentAPI",
+					Version = "v1"
+				});
+			});
 
-			// Add services to the container.
+			builder.Services.AddDbContext<AppDbContext>(options =>
+				options.UseSqlServer(
+					builder.Configuration.GetConnectionString("DefaultConnection")));
+
+			builder.Services.AddAutoMapper(typeof(TournamentProfile));
+
+			builder.Services.AddScoped<ITournamentService, TournamentService>();
 
 			builder.Services.AddControllers();
-			// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-			builder.Services.AddOpenApi();
 
 			var app = builder.Build();
 
-			// Configure the HTTP request pipeline.
+			// Swagger middleware
 			if (app.Environment.IsDevelopment())
 			{
-				app.MapOpenApi();
+				app.UseSwagger();
+				app.UseSwaggerUI();
 			}
 
 			app.UseHttpsRedirection();
 
 			app.UseAuthorization();
-
 
 			app.MapControllers();
 
