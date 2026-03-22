@@ -15,6 +15,9 @@ namespace GameTournamentAPI.Mapping
 			CreateMap<TournamentUpdateDTO, Tournament>()
 				.ForAllMembers(opt =>
 					opt.Condition((src, dest, srcMember) => srcMember != null));
+
+			CreateMap<Game, GameResponseDTO>();
+			CreateMap<GameCreateDTO, Game>();
 		}
 	}
 }

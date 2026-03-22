@@ -10,5 +10,17 @@ namespace GameTournamentAPI.Data
 			: base(options) { }
 
 		public DbSet<Tournament> Tournaments { get; set; }
+
+		public DbSet<Game> Games { get; set; }
+
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
+		{
+			modelBuilder.Entity<Tournament>()
+				.HasMany(t => t.Games)
+				.WithOne(g => g.Tournament)
+				.HasForeignKey(g => g.TournamentId);
+
+			base.OnModelCreating(modelBuilder);
+		}
 	}
 }
