@@ -17,12 +17,12 @@ namespace GameTournamentAPI.Services
 			_mapper = mapper;
 		}
 
-		public async Task<List<TournamentResponseDTO>> GetAllSyncs(string? search)
+		public async Task<List<TournamentResponseDTO>> GetAllAsync(string? search)
 		{
 			var query = _context.Tournaments.AsQueryable();
 
 			if (!string.IsNullOrEmpty(search))
-				query = query.Where(t => t.Title.Contains(search));
+				query = query.Where(t => t.Title.ToLower().Contains(search.ToLower()));
 
 			var tournaments = await query.ToListAsync();
 
@@ -36,6 +36,9 @@ namespace GameTournamentAPI.Services
 
 		public async Task<Tournament> CreateAsync(Tournament tournament)
 		{
+			if (tournament.Date < DateTime.UtcNow)
+				throw new ArgumentException("Date cannot be in the past");
+
 			_context.Tournaments.Add(tournament);
 			await _context.SaveChangesAsync();
 			return tournament;
@@ -46,6 +49,8 @@ namespace GameTournamentAPI.Services
 			var existing = await _context.Tournaments.FindAsync(id);
 			if (existing == null) return false;
 
+			if (dto.Date < DateTime.UtcNow)
+				throw new ArgumentException("Date cannot be in the past");
 			_mapper.Map(dto, existing);
 
 			await _context.SaveChangesAsync();

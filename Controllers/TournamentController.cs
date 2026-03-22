@@ -19,7 +19,7 @@ public class TournamentController : ControllerBase
 	[HttpGet]
 	public async Task<ActionResult<List<TournamentResponseDTO>>> GetAll(string? search)
 	{
-		var tournaments = await _service.GetAllSyncs(search);
+		var tournaments = await _service.GetAllAsync(search);
 		return Ok(_mapper.Map<List<TournamentResponseDTO>>(tournaments));
 	}
 
