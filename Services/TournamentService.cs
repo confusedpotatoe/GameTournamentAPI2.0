@@ -19,7 +19,7 @@ namespace GameTournamentAPI.Services
 			var query = _context.Tournaments.AsQueryable();
 			if (!string.IsNullOrEmpty(search))
 			{
-				query = query.Where(t => t.Titel.Contains(search));
+				query = query.Where(t => t.Title.Contains(search));
 			}
 			return await query.ToListAsync();
 		}

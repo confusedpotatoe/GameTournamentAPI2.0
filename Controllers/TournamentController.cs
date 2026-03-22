@@ -1,4 +1,4 @@
-﻿using GameTournamentAPI.Dtos;
+﻿using GameTournamentAPI.DTOs;
 using GameTournamentAPI.Models;
 using GameTournamentAPI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -17,21 +17,42 @@ namespace GameTournamentAPI.Controllers
 		}
 
 		[HttpGet]
-		public async Task<ActionResult<List<Tournament>>> GetAll([FromQuery] string? search)
+		public async Task<ActionResult<List<TournamentResponseDTO>>> GetAll([FromQuery] string? search)
 		{
 			var tournaments = await _service.GetAllSyncs(search);
-			return Ok(tournaments);
+
+			var result = tournaments.Select(t => new TournamentResponseDTO
+			{
+				Id = t.Id,
+				Title = t.Title,
+				Description = t.Description,
+				MaxPlayers = t.MaxPlayers,
+				Date = t.DateTime
+			});
+
+			return Ok(result);
 		}
 
 		[HttpGet("{id}")]
-		public async Task<ActionResult<Tournament>> GetById(int id)
+		public async Task<ActionResult<TournamentResponseDTO>> GetById(int id)
 		{
 			var tournament = await _service.GetByIdAsync(id);
+
 			if (tournament == null)
 			{
 				return NotFound();
 			}
-			return Ok(tournament);
+
+			var dto = new TournamentResponseDTO
+			{
+				Id = tournament.Id,
+				Title = tournament.Title,
+				Description = tournament.Description,
+				MaxPlayers = tournament.MaxPlayers,
+				Date = tournament.DateTime
+			};
+
+			return Ok(dto);
 		}
 
 		[HttpPost]
@@ -45,7 +66,14 @@ namespace GameTournamentAPI.Controllers
 				DateTime = dto.Date
 			};
 			var created = await _service.CreateAsync(tournament);
-			return Ok(new TournamentResponseDTO { Id = created.Id });
+			return CreatedAtAction(nameof(GetById), new { id = created.Id }, new TournamentResponseDTO
+			{
+				Id = created.Id,
+				Title = created.Title,
+				Description = created.Description,
+				MaxPlayers = created.MaxPlayers,
+				Date = created.DateTime
+			});
 		}
 	}
 
