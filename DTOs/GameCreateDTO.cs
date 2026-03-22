@@ -1,12 +1,12 @@
-﻿namespace GameTournamentAPI.DTOs
+﻿using System.ComponentModel.DataAnnotations;
+
+public class GameCreateDTO
 {
-	public class GameCreateDTO
-	{
-		public string Title { get; set; } = string.Empty;
+	[Required]
+	[MinLength(3)]
+	public string Title { get; set; } = string.Empty;
 
-		public DateTime Time { get; set; }
+	public DateTime Time { get; set; }
 
-		public int TournamentId { get; set; }
-
-	}
+	public int TournamentId { get; set; }
 }

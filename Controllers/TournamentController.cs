@@ -61,4 +61,20 @@ public class TournamentController : ControllerBase
 
 		return NoContent();
 	}
+
+	[HttpGet("{id}/with-games")]
+	public async Task<ActionResult<TournamentWithGamesDTO>> GetWithGames(int id)
+	{
+		var tournament = await _service.GetWithGamesAsync(id);
+		if (tournament == null) return NotFound();
+
+		return Ok(_mapper.Map<TournamentWithGamesDTO>(tournament));
+	}
+
+	[HttpGet("/api/tournaments/{tournamentId}/games")]
+	public async Task<ActionResult<List<GameResponseDTO>>> GetGamesByTournament(int tournamentId)
+	{
+		var games = await _service.GetByTournamentIdAsync(tournamentId);
+		return Ok(_mapper.Map<List<GameResponseDTO>>(games));
+	}
 }

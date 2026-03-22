@@ -19,12 +19,15 @@ namespace GameTournamentAPI.Services
 
 		public async Task<List<TournamentResponseDTO>> GetAllAsync(string? search)
 		{
-			var query = _context.Tournaments.AsQueryable();
+			var query = _context.Tournaments
+				.AsNoTracking();
 
 			if (!string.IsNullOrEmpty(search))
 				query = query.Where(t => t.Title.ToLower().Contains(search.ToLower()));
 
-			var tournaments = await query.ToListAsync();
+			var tournaments = await query
+				.OrderByDescending(t => t.Date)
+				.ToListAsync();
 
 			return _mapper.Map<List<TournamentResponseDTO>>(tournaments);
 		}
@@ -65,6 +68,13 @@ namespace GameTournamentAPI.Services
 			_context.Tournaments.Remove(existing);
 			await _context.SaveChangesAsync();
 			return true;
+		}
+
+		public async Task<Tournament?> GetWithGamesAsync(int id)
+		{
+			return await _context.Tournaments
+				.Include(t => t.Games)
+				.FirstOrDefaultAsync(t => t.Id == id);
 		}
 	}
 }

@@ -18,6 +18,7 @@ namespace GameTournamentAPI.Mapping
 
 			CreateMap<Game, GameResponseDTO>();
 			CreateMap<GameCreateDTO, Game>();
+			CreateMap<Tournament, TournamentWithGamesDTO>();
 		}
 	}
 }

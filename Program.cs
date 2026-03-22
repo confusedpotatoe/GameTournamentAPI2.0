@@ -32,6 +32,7 @@ namespace GameTournamentAPI
 			});
 
 			builder.Services.AddScoped<ITournamentService, TournamentService>();
+			builder.Services.AddScoped<IGameService, GameService>();
 
 			builder.Services.AddControllers();
 
